@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: e37b78c3567e11348a9499c85610390c
+guid: b1c88b9ce78587a4587bfc11079066b2
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Sword And Shield Walk
+    second: Sword And Shield Slash
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -21,16 +21,12 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'mixamo.com' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'B-palm_04_L' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'B-palm_04_R' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -39,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Sword And Shield Walk
+      name: Sword And Shield Slash
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 33
+      lastFrame: 54
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

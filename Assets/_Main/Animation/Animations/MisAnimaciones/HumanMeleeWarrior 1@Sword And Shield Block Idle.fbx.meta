@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: e37b78c3567e11348a9499c85610390c
+guid: bd9c8ece14ccc894b93b904dd9dcb6fb
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Sword And Shield Walk
+    second: Sword And Shield Block Idle
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -30,7 +30,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -39,11 +39,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Sword And Shield Walk
+      name: Sword And Shield Block Idle
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 33
+      lastFrame: 42
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
