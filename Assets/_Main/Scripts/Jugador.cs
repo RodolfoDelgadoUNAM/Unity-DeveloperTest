@@ -33,24 +33,46 @@ public class Jugador : MonoBehaviour
     [Tooltip("arrastra aqui el objeto camara")]
     public Transform PosicionCamara;
 
+    [Header("Variables de juego")]
+
+    //Ajustar la vida inicial
+    [Tooltip("Vida inicial del jugador")]
+    public int VidaJugador = 100;
+
+    //Poder de Ataque, se puede ajustar con Items recolectados
+    [Tooltip("Poder Ataque")]
+    public float PoderAtaqueJugador;
+
     //Variables privadas
     CharacterController player;
     Animator AnimacionJugador;
     private float VelocidadRotacion;
     private Vector3 Salto;
+
+    //Vairables publicas pero ocultas en inspector, se usan para avisar estados del jugador
     [HideInInspector]
     public bool JugadorAtacando;
     [HideInInspector]
+    public bool JugadorDefendiendo;
+    [HideInInspector]
     public bool JugadorCorriendo;
     [HideInInspector]
-    public bool JugadorDefendiendo;
+    public bool JugadorDanado;
+    [HideInInspector]
+    public bool JugadorMuriendo = false;
+
 
     #endregion
 
     void Start()
     {
+        //Se obtienen los componente del objeto
         player = GetComponent<CharacterController>();
         AnimacionJugador = GetComponent<Animator>();
+
+        //Se activa el character controller ya que durante la muerte se desactivo
+        player.enabled = true;
+        JugadorMuriendo = false;
     }
 
     void Update()
@@ -66,7 +88,6 @@ public class Jugador : MonoBehaviour
 
         //Metodo Atacar condicion clic derechopresionado
         DefensaJugador(Input.GetMouseButton(1));
-
     }
 
 
@@ -78,7 +99,7 @@ public class Jugador : MonoBehaviour
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         //si se estan presionando los controles aplicar el movimiento y el jugador no esta atacando o defendiendo
-        if (direction.magnitude > 0f && !JugadorAtacando && !JugadorDefendiendo)
+        if (direction.magnitude > 0f && !JugadorAtacando && !JugadorDefendiendo && !JugadorMuriendo)
         {
             //Se activan animacion corriendo
             AnimacionCorrer(true);
@@ -113,7 +134,7 @@ public class Jugador : MonoBehaviour
     public void SaltoJugador()
     {
 
-        if (player.isGrounded && Salto.y<0)
+        if (player.isGrounded && Salto.y<0 && !JugadorMuriendo)
         {
             Salto.y = 0;
             AnimacionSalto(false);
@@ -131,6 +152,7 @@ public class Jugador : MonoBehaviour
 
     public void AtaqueJugador(bool ControlAtaque)
     {
+        //Si jugador no esta corriendo ni defendiendo puede correr
         if(ControlAtaque && !JugadorCorriendo && !JugadorDefendiendo)
         {
             JugadorAtacando = true;
@@ -146,6 +168,7 @@ public class Jugador : MonoBehaviour
 
     public void DefensaJugador(bool ControlDefensa)
     {
+        //Si jugador no esta corriendo ni Atacando puede correr
         if (ControlDefensa && !JugadorCorriendo &&!JugadorAtacando)
         {
             JugadorDefendiendo = true;
@@ -156,6 +179,59 @@ public class Jugador : MonoBehaviour
         }
 
         AnimacionDefender(JugadorDefendiendo);
+
+    }
+    #endregion
+
+    #region Control Vida Jugador
+
+    //La vida puede incrementarse con items o disminuir con danos, por eso la funcion se le pasa parametro delta
+    public void Vida(int DeltaVida)
+    {
+        //Si Deltavida es menor a cero el jugador esta recibiendo ataques si ademas no se esta en modo defensa y no se esta muriendo
+        if (DeltaVida < 0 && !JugadorDefendiendo && !JugadorMuriendo)
+        {
+            //A vida se descuenta el dano
+            VidaJugador += DeltaVida;
+
+            JugadorDanado = true;
+
+            //Se activa animacion de dano
+            AnimacionDano(JugadorDanado);
+        } else
+        {
+            JugadorDanado = false;
+
+            //Se activa animacion de dano
+            AnimacionDano(JugadorDanado);
+        }
+
+
+        //Si deltaVida es mayor a cero el jugador esta recibiendo un Item de salud
+        if (DeltaVida > 0 && !JugadorDefendiendo && !JugadorMuriendo && !JugadorCorriendo && !JugadorAtacando)
+        {
+            //A vida se aumenta la salud
+            VidaJugador += DeltaVida;
+
+            //Se activa animacion de mas salud
+            AnimacionSalud();
+        }
+
+
+        //Si delta vida es igual o menor a cero el jugador muere
+        if (VidaJugador <= 0)
+        {
+            JugadorMuriendo = true;
+            //Se realiza la animacion de la Muerte
+            AnimacionMuerte();
+            Invoke("Muerte", 5f);
+        }
+
+    }
+
+    //Se quizo llamar con animation event pero existia un error al invocar (se puede mejorar esto con mas tiempo)
+    public void Muerte()
+    {
 
     }
 
@@ -182,7 +258,32 @@ public class Jugador : MonoBehaviour
         AnimacionJugador.SetBool("Defender", Defendiendo);
     }
 
+    public void AnimacionDano(bool Dano)
+    {
+        AnimacionJugador.SetBool("Dano", Dano);
+    }
+
+    //La muerte se activa con trigger al ser un evento sin loop
+    public void AnimacionMuerte()
+    {
+        //se desactiva el collider del character para que pueda caer al piso el jugador
+        player.enabled = false;
+        AnimacionJugador.SetTrigger("Muerte");
+    }
+
+    //Aumento a la salud se activa con un trigger
+    public void AnimacionSalud()
+    {
+        AnimacionJugador.SetTrigger("Salud");
+    }
+
     #endregion
+
+    #region DeteccionColliders
+
+
+    #endregion
+
 }
 
 
