@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Jugador : MonoBehaviour
 {
@@ -33,11 +34,14 @@ public class Jugador : MonoBehaviour
     [Tooltip("arrastra aqui el objeto camara")]
     public Transform PosicionCamara;
 
+    [Tooltip("arrastra aqui el la barra de vida")]
+    public Slider BarraVidaUI;
+
     [Header("Variables de juego")]
 
     //Ajustar la vida inicial
     [Tooltip("Vida inicial del jugador")]
-    public int VidaJugador = 100;
+    public int VidaInicialJugador = 100;
 
     //Poder de Ataque, se puede ajustar con Items recolectados
     [Tooltip("Poder Ataque")]
@@ -49,6 +53,7 @@ public class Jugador : MonoBehaviour
     Animator AnimacionJugador;
     private float VelocidadRotacion;
     private Vector3 Salto;
+    private int VidaJugador;
 
     //Vairables publicas pero ocultas en inspector, se usan para avisar estados del jugador
     [HideInInspector]
@@ -67,6 +72,10 @@ public class Jugador : MonoBehaviour
 
     void Start()
     {
+        //se obtiene la vida inicial
+        VidaJugador = VidaInicialJugador;
+        BarraVidaUI.value = (float)(VidaJugador / (float)VidaInicialJugador);
+
         //Se obtienen los componente del objeto
         player = GetComponent<CharacterController>();
         AnimacionJugador = GetComponent<Animator>();
@@ -89,6 +98,9 @@ public class Jugador : MonoBehaviour
 
         //Metodo Atacar condicion clic derechopresionado
         DefensaJugador(Input.GetMouseButton(1));
+
+        //se ajusta el valor de la barra de vida del Jugador
+        BarraVidaUI.value = (float)(VidaJugador / (float)VidaInicialJugador);
     }
 
 
@@ -203,7 +215,7 @@ public class Jugador : MonoBehaviour
         {
             JugadorDanado = false;
 
-            //Se activa animacion de dano
+            //Se Desactiva animacion de dano
             AnimacionDano(JugadorDanado);
         }
 
@@ -282,6 +294,15 @@ public class Jugador : MonoBehaviour
 
     #region DeteccionColliders
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        //Se detecta si el enemigo esta siendo golpeado por la espada del jugador
+        if (collision.gameObject.tag == "EspadaEnemigo")
+        {
+            //Se pasa el dano que produce el Enemigo para restar vida al jugador
+            Vida(collision.gameObject.GetComponent<Enemigo>().PoderAtaqueEnemigo*-1);
+        }
+    }
 
     #endregion
 

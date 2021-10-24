@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemigo : MonoBehaviour
 {
@@ -30,15 +31,16 @@ public class Enemigo : MonoBehaviour
     [Tooltip("Agrega aqui el efecto de dano")]
     public ParticleSystem EfectoSangre;
 
-    [Header("Variables de juego")]
+    [Tooltip("arrastra aqui el la barra de vida")]
+    public Slider BarraVidaUI;
 
     //Ajustar la vida inicial
     [Tooltip("Vida inicial del Enemigo")]
-    public int VidaEnemigo = 100;
+    public int VidaInicialEnemigo = 100;
 
     //Poder de Ataque del enemigo
     [Tooltip("Poder Ataque")]
-    public float PoderAtaqueEnemigo;
+    public int PoderAtaqueEnemigo;
 
     //Poder de Ataque del enemigo
     [Tooltip("Ajustar distancia a la que el enemigo comienza a atacar")]
@@ -55,7 +57,7 @@ public class Enemigo : MonoBehaviour
     private Vector3 DireccionMovimiento;
     private Vector3 DireccionRotacion;
     private float DistanciaJugadorEnemigo;
-
+    private int VidaEnemigo;
     private float targetAngle;
 
     //Vairables publicas pero ocultas en inspector, se usan para ver el estado del Enemigo
@@ -78,6 +80,11 @@ public class Enemigo : MonoBehaviour
         //Se activa el character controller ya que durante la muerte se desactivo
         EnemigoMuriendo = false;
         JugadorEnZona = false;
+
+        //se obtiene la vida inicial
+        VidaEnemigo = VidaInicialEnemigo;
+        BarraVidaUI.value = (float)(VidaEnemigo / (float)VidaInicialEnemigo);
+
     }
 
     void Update()
@@ -87,6 +94,9 @@ public class Enemigo : MonoBehaviour
         {
             MovimientoEnemigo();
         }
+
+        //Se ajusta el valor de la barra de vida del enemigo
+        BarraVidaUI.value = ((float)VidaEnemigo / (float)VidaInicialEnemigo);
     }
 
 
