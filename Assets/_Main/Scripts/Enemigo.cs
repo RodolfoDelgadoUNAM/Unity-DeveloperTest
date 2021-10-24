@@ -39,10 +39,6 @@ public class Enemigo : MonoBehaviour
     public int VidaInicialEnemigo = 100;
 
     //Poder de Ataque del enemigo
-    [Tooltip("Poder Ataque")]
-    public int PoderAtaqueEnemigo;
-
-    //Poder de Ataque del enemigo
     [Tooltip("Ajustar distancia a la que el enemigo comienza a atacar")]
     [Range(0.5f, 5f)]
     public float SetDistanciaAtaque;
@@ -109,7 +105,6 @@ public class Enemigo : MonoBehaviour
         {
             //Se obtiene la distancia entre el jugador y el enemigo
             DistanciaJugadorEnemigo = Vector3.Distance(transform.position, Jugador.transform.position);
-            Debug.Log("Distancia a Jugador" + DistanciaJugadorEnemigo);
             // Sin importar si el jugador esta persiguiendo o atacando al enemigo, no deja de verlo
             //definiendo el vector para la rotacion del enemigo
             DireccionRotacion = Jugador.transform.position - transform.position;
@@ -221,12 +216,6 @@ public class Enemigo : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //Detectar si Jugador esta dentro de la zona de vision del Enemigo
-        if(other.gameObject.tag == "Jugador")
-        {
-            JugadorEnZona = true;
-        }
-
         //Detecta si el jugador Colision con algun punto de vigilancia
         if (other.gameObject.tag == "PosteVigilanciaA")
         {
@@ -237,6 +226,15 @@ public class Enemigo : MonoBehaviour
         if (other.gameObject.tag == "PosteVigilanciaB")
         {
             Direccion = "PosteVigilanciaB";
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        //Detectar si Jugador esta dentro de la zona de vision del Enemigo
+        if (other.gameObject.tag == "Jugador")
+        {
+            JugadorEnZona = true;
         }
     }
 

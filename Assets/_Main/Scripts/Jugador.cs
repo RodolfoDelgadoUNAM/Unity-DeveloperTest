@@ -37,6 +37,9 @@ public class Jugador : MonoBehaviour
     [Tooltip("arrastra aqui el la barra de vida")]
     public Slider BarraVidaUI;
 
+    [Tooltip("Agrega aqui el efecto de dano")]
+    public ParticleSystem EfectoSangre;
+
     [Header("Variables de juego")]
 
     //Ajustar la vida inicial
@@ -202,22 +205,19 @@ public class Jugador : MonoBehaviour
     public void Vida(int DeltaVida)
     {
         //Si Deltavida es menor a cero el jugador esta recibiendo ataques si ademas no se esta en modo defensa y no se esta muriendo
-        if (DeltaVida < 0 && !JugadorDefendiendo && !JugadorMuriendo)
+        if (DeltaVida < 0 && !JugadorDefendiendo && !JugadorMuriendo &&!JugadorAtacando)
         {
             //A vida se descuenta el dano
             VidaJugador += DeltaVida;
 
             JugadorDanado = true;
 
+            //Se activa el efecto de sangre
+            EfectoSangre.Play();
+
             //Se activa animacion de dano
             AnimacionDano(JugadorDanado);
-        } else
-        {
-            JugadorDanado = false;
-
-            //Se Desactiva animacion de dano
-            AnimacionDano(JugadorDanado);
-        }
+        } 
 
 
         //Si deltaVida es mayor a cero el jugador esta recibiendo un Item de salud
@@ -294,15 +294,31 @@ public class Jugador : MonoBehaviour
 
     #region DeteccionColliders
 
-    private void OnCollisionEnter(Collision collision)
+
+    private void OnTriggerEnter(Collider other)
     {
         //Se detecta si el enemigo esta siendo golpeado por la espada del jugador
-        if (collision.gameObject.tag == "EspadaEnemigo")
+        if (other.gameObject.tag == "EspadaEnemigo")
         {
+            Debug.Log("Ataque Enemigo");
             //Se pasa el dano que produce el Enemigo para restar vida al jugador
-            Vida(collision.gameObject.GetComponent<Enemigo>().PoderAtaqueEnemigo*-1);
+            Vida(-10);
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //Se detecta si el enemigo esta siendo golpeado por la espada del jugador
+        if (other.gameObject.tag == "EspadaEnemigo")
+        {
+            JugadorDanado = false;
+
+            //Se Desactiva animacion de dano
+            AnimacionDano(JugadorDanado);
+        }
+    }
+
+
 
     #endregion
 
