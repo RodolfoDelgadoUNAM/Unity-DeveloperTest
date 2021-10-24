@@ -46,17 +46,22 @@ public class Jugador : MonoBehaviour
     [Tooltip("Vida inicial del jugador")]
     public int VidaInicialJugador = 100;
 
-    //Poder de Ataque, se puede ajustar con Items recolectados
+    //Poder de Ataque de jugador
     [Tooltip("Poder Ataque")]
     [Range(1, 10)]
     public int PoderAtaqueJugador;
+
+    //Dano que le producen los enemigos al jugador
+    [Tooltip("Poder Ataque")]
+    [Range(1, 10)]
+    public int PoderAtaqueEnemigo;
 
     //Variables privadas
     CharacterController player;
     Animator AnimacionJugador;
     private float VelocidadRotacion;
     private Vector3 Salto;
-    private int VidaJugador;
+    
 
     //Vairables publicas pero ocultas en inspector, se usan para avisar estados del jugador
     [HideInInspector]
@@ -69,6 +74,8 @@ public class Jugador : MonoBehaviour
     public bool JugadorDanado;
     [HideInInspector]
     public bool JugadorMuriendo = false;
+    [HideInInspector]
+    public int VidaJugador;
 
 
     #endregion
@@ -156,7 +163,7 @@ public class Jugador : MonoBehaviour
             AnimacionSalto(false);
         }
         //Si es presiona boton de salto y el jugador esta en el suelo y no esta atacando
-        if (Input.GetButtonDown("Jump") && player.isGrounded && !JugadorAtacando)
+        if (Input.GetButtonDown("Jump") && player.isGrounded && !JugadorAtacando && !JugadorMuriendo)
         {
             Salto.y += Mathf.Sqrt(PoderSalto *-2 *Gravedad);
             AnimacionSalto(true);
@@ -169,7 +176,7 @@ public class Jugador : MonoBehaviour
     public void AtaqueJugador(bool ControlAtaque)
     {
         //Si jugador no esta corriendo ni defendiendo puede correr
-        if(ControlAtaque && !JugadorCorriendo && !JugadorDefendiendo)
+        if(ControlAtaque && !JugadorCorriendo && !JugadorDefendiendo && !JugadorMuriendo)
         {
             JugadorAtacando = true;
         }
@@ -185,7 +192,7 @@ public class Jugador : MonoBehaviour
     public void DefensaJugador(bool ControlDefensa)
     {
         //Si jugador no esta corriendo ni Atacando puede correr
-        if (ControlDefensa && !JugadorCorriendo &&!JugadorAtacando)
+        if (ControlDefensa && !JugadorCorriendo &&!JugadorAtacando &&!JugadorMuriendo)
         {
             JugadorDefendiendo = true;
         }
@@ -220,8 +227,8 @@ public class Jugador : MonoBehaviour
         } 
 
 
-        //Si deltaVida es mayor a cero el jugador esta recibiendo un Item de salud
-        if (DeltaVida > 0 && !JugadorDefendiendo && !JugadorMuriendo && !JugadorCorriendo && !JugadorAtacando)
+        //Si deltaVida es mayor a cero el jugador esta recibiendo un Item de salud pero ademas no puede rebasar la vida inicial
+        if (DeltaVida > 0 && (VidaJugador<=VidaInicialJugador) &&!JugadorMuriendo)
         {
             //A vida se aumenta la salud
             VidaJugador += DeltaVida;
@@ -245,7 +252,8 @@ public class Jugador : MonoBehaviour
     //Se quizo llamar con animation event pero existia un error al invocar (se puede mejorar esto con mas tiempo)
     public void Muerte()
     {
-
+        //Se llama al control del juego para aparecer panel de gameover
+        FindObjectOfType<ControlJuego>().JuegoPerdido();
     }
 
     #endregion
@@ -300,9 +308,29 @@ public class Jugador : MonoBehaviour
         //Se detecta si el enemigo esta siendo golpeado por la espada del jugador
         if (other.gameObject.tag == "EspadaEnemigo")
         {
-            Debug.Log("Ataque Enemigo");
             //Se pasa el dano que produce el Enemigo para restar vida al jugador
-            Vida(-10);
+            Vida(-1*PoderAtaqueEnemigo);
+        }
+
+        //Se detecta si se recogi un item de aumento de Salto
+        if (other.gameObject.tag == "ItemSalto")
+        {
+            //Se aumenta el inventario de los poderes de salto
+            FindObjectOfType<ControlJuego>().CantidadInventarioSalto += 1;
+        }
+
+        //Se detecta si se recogi un item de aumento de Vida
+        if (other.gameObject.tag == "ItemVida")
+        {
+            //Se aumenta el inventario de los poderes de Vida
+            FindObjectOfType<ControlJuego>().CantidadInventarioAlimento += 1;
+        }
+
+        //Se detecta si se recogi un item de aumento de Ataque
+        if (other.gameObject.tag == "ItemAtaque")
+        {
+            //Se aumenta el inventario de los poderes de Ataque
+            FindObjectOfType<ControlJuego>().CantidadInventarioAtaque += 1;
         }
     }
 

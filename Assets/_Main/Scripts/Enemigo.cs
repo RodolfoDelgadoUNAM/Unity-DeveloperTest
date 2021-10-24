@@ -44,9 +44,7 @@ public class Enemigo : MonoBehaviour
     public float SetDistanciaAtaque;
 
     //Variables privadas
-    Rigidbody EnemigoController;
     Animator AnimacionEnemigo;
-    private float VelocidadRotacion;
     private bool JugadorEnZona;
     private bool AtacandoJugador;
     private string Direccion;
@@ -54,7 +52,6 @@ public class Enemigo : MonoBehaviour
     private Vector3 DireccionRotacion;
     private float DistanciaJugadorEnemigo;
     private int VidaEnemigo;
-    private float targetAngle;
 
     //Vairables publicas pero ocultas en inspector, se usan para ver el estado del Enemigo
     [HideInInspector]
@@ -70,7 +67,6 @@ public class Enemigo : MonoBehaviour
     void Start()
     {
         //Se obtienen los componente del objeto
-        EnemigoController = GetComponent<Rigidbody>();
         AnimacionEnemigo = GetComponent<Animator>();
 
         //Se activa el character controller ya que durante la muerte se desactivo
@@ -186,6 +182,8 @@ public class Enemigo : MonoBehaviour
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             //Se realiza la animacion de la Muerte
             AnimacionMuerte();
+            //Se aumenta el contador de enemigos eliminados en el controlador del juego
+            FindObjectOfType<ControlJuego>().EnemigosEliminados += 1;
             //Se destruye el cadaver despues de 20 segundos
             Destroy(gameObject, 20f);
             
@@ -205,7 +203,6 @@ public class Enemigo : MonoBehaviour
     //La muerte se activa con trigger al ser un evento sin loop
     public void AnimacionMuerte()
     {
-
         AnimacionEnemigo.SetTrigger("Muerte");
     }
 
