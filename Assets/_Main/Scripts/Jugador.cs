@@ -41,7 +41,8 @@ public class Jugador : MonoBehaviour
 
     //Poder de Ataque, se puede ajustar con Items recolectados
     [Tooltip("Poder Ataque")]
-    public float PoderAtaqueJugador;
+    [Range(1, 10)]
+    public int PoderAtaqueJugador;
 
     //Variables privadas
     CharacterController player;

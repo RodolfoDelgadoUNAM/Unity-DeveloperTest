@@ -7,6 +7,8 @@ TagManager:
   - PosteVigilanciaA
   - PosteVigilanciaB
   - Jugador
+  - EspadaJugador
+  - EspadaEnemigo
   layers:
   - Default
   - TransparentFX

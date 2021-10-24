@@ -15,9 +15,9 @@ public class Enemigo : MonoBehaviour
 
     [Header("Objetos de referencia")]
 
-    //se requiere transform de camara para mover al jugador con ella
+    //se requiere transform de jugador para mover enemigo y recibir dano
     [Tooltip("arrastra aqui el objeto Jugador")]
-    public Transform PosicionJugador;
+    public GameObject Jugador;
 
     //se requiere transform de camara para mover al jugador con ella
     [Tooltip("arrastra aqui el objeto con el punto A de vigilancia")]
@@ -26,6 +26,9 @@ public class Enemigo : MonoBehaviour
     //se requiere transform de camara para mover al jugador con ella
     [Tooltip("arrastra aqui el objeto con el punto B de vigilancia")]
     public Transform PuntoB;
+
+    [Tooltip("Agrega aqui el efecto de dano")]
+    public ParticleSystem EfectoSangre;
 
     [Header("Variables de juego")]
 
@@ -55,17 +58,11 @@ public class Enemigo : MonoBehaviour
 
     private float targetAngle;
 
-    //Vairables publicas pero ocultas en inspector, se usan para avisar estados del Enemigo
+    //Vairables publicas pero ocultas en inspector, se usan para ver el estado del Enemigo
     [HideInInspector]
     public bool JugadorAtacando;
     [HideInInspector]
-    public bool JugadorDefendiendo;
-    [HideInInspector]
-    public bool JugadorCorriendo;
-    [HideInInspector]
-    public bool JugadorDanado;
-    [HideInInspector]
-    public bool JugadorMuriendo = false;
+    public bool EnemigoMuriendo = false;
 
     
 
@@ -79,14 +76,17 @@ public class Enemigo : MonoBehaviour
         AnimacionEnemigo = GetComponent<Animator>();
 
         //Se activa el character controller ya que durante la muerte se desactivo
-        JugadorMuriendo = false;
+        EnemigoMuriendo = false;
         JugadorEnZona = false;
     }
 
     void Update()
     {
-        //Metodo control movimiento, parametros son los inputs del teclado
-        MovimientoEnemigo();
+        //El enemigo siempre se esta moviendo con excepcion de cuando ya esta muriendo
+        if(!EnemigoMuriendo)
+        {
+            MovimientoEnemigo();
+        }
     }
 
 
@@ -98,11 +98,11 @@ public class Enemigo : MonoBehaviour
         if (JugadorEnZona)
         {
             //Se obtiene la distancia entre el jugador y el enemigo
-            DistanciaJugadorEnemigo = Vector3.Distance(transform.position, PosicionJugador.position);
+            DistanciaJugadorEnemigo = Vector3.Distance(transform.position, Jugador.transform.position);
             Debug.Log("Distancia a Jugador" + DistanciaJugadorEnemigo);
             // Sin importar si el jugador esta persiguiendo o atacando al enemigo, no deja de verlo
             //definiendo el vector para la rotacion del enemigo
-            DireccionRotacion = PosicionJugador.position - transform.position;
+            DireccionRotacion = Jugador.transform.position - transform.position;
 
             //se revisa si ya esta cerca para atacar
             if (DistanciaJugadorEnemigo <= SetDistanciaAtaque)
@@ -113,7 +113,7 @@ public class Enemigo : MonoBehaviour
             else
             {
                 //Se mueve al enemigo en direccion del jugador
-                DireccionMovimiento = PosicionJugador.position;
+                DireccionMovimiento = Jugador.transform.position;
 
                 AtacandoJugador = false;
                 //Se desactiva animacion ataque
@@ -160,47 +160,31 @@ public class Enemigo : MonoBehaviour
         AnimacionAtacar(true);
     }
 
-    
+
     #endregion
 
     #region Control Vida Enemigo
 
-    //La vida puede incrementarse con items o disminuir con danos, por eso la funcion se le pasa parametro delta
+    //Si se llama a la funcion es por que se estan recibiendo ataques, el enemigo no tiene la posibilidad de aumentar su vida
     public void Vida(int DeltaVida)
     {
-        //Si Deltavida es menor a cero el jugador esta recibiendo ataques si ademas no se esta en modo defensa y no se esta muriendo
-        if (DeltaVida < 0 && !JugadorDefendiendo && !JugadorMuriendo)
-        {
-            //A vida se descuenta el dano
-            VidaEnemigo += DeltaVida;
 
-            JugadorDanado = true;
+        //A vida se descuenta el dano
+        VidaEnemigo -= DeltaVida;
+        //Se activa el efecto de sangre
+        EfectoSangre.Play();
 
-            //Se activa animacion de dano
-            AnimacionDano(JugadorDanado);
-        }
-        else
-        {
-            JugadorDanado = false;
-
-            //Se activa animacion de dano
-            AnimacionDano(JugadorDanado);
-        }
-
-        //Si delta vida es igual o menor a cero el jugador muere
         if (VidaEnemigo <= 0)
         {
-            JugadorMuriendo = true;
+            EnemigoMuriendo = true;
+            //Se desactivan los constraints del rigidbody
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             //Se realiza la animacion de la Muerte
             AnimacionMuerte();
-            Invoke("Muerte", 5f);
+            //Se destruye el cadaver despues de 20 segundos
+            Destroy(gameObject, 20f);
+            
         }
-
-    }
-
-    //Se quizo llamar con animation event pero existia un error al invocar (se puede mejorar esto con mas tiempo)
-    public void Muerte()
-    {
 
     }
 
@@ -211,11 +195,6 @@ public class Enemigo : MonoBehaviour
     public void AnimacionAtacar(bool Atacando)
     {
         AnimacionEnemigo.SetBool("Atacar", Atacando);
-    }
-
-    public void AnimacionDano(bool Dano)
-    {
-        AnimacionEnemigo.SetBool("Dano", Dano);
     }
 
     //La muerte se activa con trigger al ser un evento sin loop
@@ -249,21 +228,28 @@ public class Enemigo : MonoBehaviour
         {
             Direccion = "PosteVigilanciaB";
         }
-
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        
-    }
 
-    //Detectar si Jugador salio de la zona de vision del Enemigo
     private void OnTriggerExit(Collider other)
     {
         //Detectar si Jugador salio de la zona de vision del Enemigo
         if (other.gameObject.tag == "Jugador")
         {
             JugadorEnZona = false;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        //Se detecta si el enemigo esta siendo golpeado por la espada del jugador
+        if(collision.gameObject.tag == "EspadaJugador")
+        {
+            //Se pasa el dano que produce el jugador para restar vida al enemigo solo si el jugador esta realmente atacando
+            if(Jugador.GetComponent<Jugador>().JugadorAtacando && !EnemigoMuriendo)
+            {
+                Vida(Jugador.GetComponent<Jugador>().PoderAtaqueJugador);
+            }
         }
     }
 
