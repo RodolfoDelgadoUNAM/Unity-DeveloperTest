@@ -22,6 +22,13 @@ public class ControlEscenas : MonoBehaviour
         StartCoroutine(CargarAsync(NombreDeEscena));
     }
 
+    //Una metodo para cerrar el juego
+
+    public void CerrarJuego()
+    {
+        Application.Quit();
+    }
+
 
     IEnumerator CargarAsync(string NombreDeEscena)
     {
