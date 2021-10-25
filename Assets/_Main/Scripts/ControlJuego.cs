@@ -66,12 +66,14 @@ public class ControlJuego : MonoBehaviour
         Time.timeScale = 1f;
         Pausa = false;
 
-        //Se guardan los valores iniciales del jugador
-        PoderAtaque_Inicial = ControlJugador.PoderAtaqueJugador;
-        PoderSalto_Inicial = ControlJugador.PoderSalto;
+
 
         //Se busca el objeto jugador para recibir y mandar valores de variables como aumentos de poder y salud
         ControlJugador = FindObjectOfType<Jugador>();
+
+        //Se guardan los valores iniciales del jugador
+        PoderAtaque_Inicial = ControlJugador.PoderAtaqueJugador;
+        PoderSalto_Inicial = ControlJugador.PoderSalto;
     }
 
     // Update is called once per frame

@@ -309,7 +309,7 @@ public class Jugador : MonoBehaviour
         if (other.gameObject.tag == "EspadaEnemigo")
         {
             //Se pasa el dano que produce el Enemigo para restar vida al jugador
-            Vida(-1*PoderAtaqueEnemigo);
+            Vida(-10*PoderAtaqueEnemigo);
         }
 
         //Se detecta si se recogi un item de aumento de Salto
@@ -345,9 +345,6 @@ public class Jugador : MonoBehaviour
             AnimacionDano(JugadorDanado);
         }
     }
-
-
-
     #endregion
 
 }
