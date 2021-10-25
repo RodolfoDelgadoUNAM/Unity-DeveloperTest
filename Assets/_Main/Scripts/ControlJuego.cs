@@ -165,7 +165,7 @@ public class ControlJuego : MonoBehaviour
 
 
             //Se pasa el valor del poder del salto al jugador limitado a 3
-            if(PoderSaltoAplicado <3)
+            if(PoderSaltoAplicado <4)
             {
                 ControlJugador.PoderSalto = PoderSaltoAplicado * PoderSalto_Inicial;
 
@@ -202,7 +202,7 @@ public class ControlJuego : MonoBehaviour
 
 
             //Se pasa el valor del poder del salto al jugador limitado a 3
-            if (PoderAtaqueAplicado < 3)
+            if (PoderAtaqueAplicado < 4)
             {
                 ControlJugador.PoderAtaqueJugador = PoderAtaqueAplicado * PoderAtaque_Inicial;
 

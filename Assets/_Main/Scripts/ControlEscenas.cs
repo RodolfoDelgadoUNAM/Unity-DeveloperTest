@@ -19,6 +19,7 @@ public class ControlEscenas : MonoBehaviour
     //La escenas se llaman por medio de botones se parametriza el nombre de la escena a cargar
     public void CargaraNivel (string NombreDeEscena)
     {
+        Time.timeScale = 1f;
         StartCoroutine(CargarAsync(NombreDeEscena));
     }
 

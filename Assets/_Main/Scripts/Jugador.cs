@@ -317,6 +317,8 @@ public class Jugador : MonoBehaviour
         {
             //Se aumenta el inventario de los poderes de salto
             FindObjectOfType<ControlJuego>().CantidadInventarioSalto += 1;
+            //se destuye el objeto
+            Destroy(other.gameObject);
         }
 
         //Se detecta si se recogi un item de aumento de Vida
@@ -324,6 +326,8 @@ public class Jugador : MonoBehaviour
         {
             //Se aumenta el inventario de los poderes de Vida
             FindObjectOfType<ControlJuego>().CantidadInventarioAlimento += 1;
+            //se destuye el objeto
+            Destroy(other.gameObject);
         }
 
         //Se detecta si se recogi un item de aumento de Ataque
@@ -331,6 +335,8 @@ public class Jugador : MonoBehaviour
         {
             //Se aumenta el inventario de los poderes de Ataque
             FindObjectOfType<ControlJuego>().CantidadInventarioAtaque += 1;
+            //se destuye el objeto
+            Destroy(other.gameObject);
         }
     }
 
